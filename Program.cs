@@ -144,23 +144,78 @@ void AlterarDescricaoDaTarefa()
     UI.ExibeDestaque("\n-- Alterar Descrição da Tarefa ---");
     int id = UI.SelecionaId();
     string descricao = UI.SelecionaDescricao();
-    // Continue daqui
-    Console.WriteLine(id);
-    Console.WriteLine(descricao);
+    
+    if (string.IsNullOrEmpty(descricao))
+    {
+        Console.WriteLine("Toda tarefa precisa de uma descrição");
+        return;
+    }
+
+    using (var _db = new tarefasContext())
+    {
+      var tarefa = _db.Tarefa.Find(id);
+
+      if (tarefa == null)
+      {
+        Console.WriteLine("Não encontramos a tarefa");
+        return;
+      }
+
+      tarefa.Descricao = descricao;
+      _db.SaveChanges();
+
+      string feito = tarefa.Concluida ? "X" : " ";
+      Console.WriteLine($"[{feito}] {tarefa.id} => {tarefa.Descricao}");
+    }
 }
 
 void ConcluirTarefa()
 {
     UI.ExibeDestaque("\n-- Concluir Tarefa ---");
     int id = UI.SelecionaId();
-    // Continue daqui
-    Console.WriteLine(id);
+    
+    using (var _db = new tarefasContext())
+    {
+        var tarefa = _db.Tarefa.Find(id);
+
+        if (tarefa == null)
+        {
+            Console.WriteLine("Não encontramos a tarefa");
+            return;
+        }
+
+        if (tarefa.Concluida)
+        {
+            Console.WriteLine("Você já fez essa tarefa, parabéns");
+            return;
+        }
+
+        tarefa.Concluida = true
+        _db.SaveChanges();
+
+        string feito = tarefa.Concluida ? "x" : " ";
+        Console.WriteLine($"[{feito}] {tarefa.Id} => {tarefa.Descricao}");
+    }
 }
 
 void ExcluirTarefa()
 {
     UI.ExibeDestaque("\n-- Excluir Tarefa ---");
     int id = UI.SelecionaId();
-    // Continue daqui
-    Console.WriteLine(id);
+    
+    using (var _db = new tarefasContext())
+    {
+        var tarefa = _db.Tarefa.Find(id);
+
+        if (tarefa == null)
+        {
+            Console.WriteLine("Não encontramos a tarefa");
+            return;
+        }
+        
+        _db.Tarefa.Remove(tarefa);
+        _db.SaveChanges();
+
+        Console.WriteLine("Tarefa excluída com sucesso");
+    }
 }
